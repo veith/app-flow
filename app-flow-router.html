@@ -3,8 +3,11 @@
 <!--
 `app-flow`
 
-is a helper component for firing  app-flow events with an app-flow object.
-Sends all public properties from current component with the event.
+Use this component with iron-page to implement application flow
+
+    <app-flow-router id="flow" current="{{page}}" config="[[conf]]" data="{{qp}}"></app-flow-router>
+    <iron-pages selected="[[page]]" ...
+    <script>... this.$.flow.check(eventDataFromAppFlow) ...</script>
 
 @demo demo/index.html 
 -->
@@ -34,6 +37,7 @@ Sends all public properties from current component with the event.
          * |:----------|:----------------|:------------|:-------------------|
          * | view-main | form-completed  | detail-view | element => aufgabe |
          *
+         *     [['view-main', 'button-tapped', 'detail-view',  'a => id, barray => mixx']]
          *
          */
 
@@ -49,13 +53,18 @@ Sends all public properties from current component with the event.
           type: String,
           notify: true
         },
-
-        queryParamerters: {
+        /**
+         *
+         */
+        data: {
           type: Object,
           notify: true
         }
 
       },
+      /**
+       * build internal config for faster access
+       */
       _initConf: function (configArray) {
         this._configObject = {};
         var self = this;
@@ -78,7 +87,7 @@ Sends all public properties from current component with the event.
 
           this.set('current', conf.target);
           if (conf.mapping == undefined || conf.mapping == '') {
-            this.set('queryParamerters', flowEvent.data);
+            this.set('data', flowEvent.data);
           } else {
             // map event data to mappings
             var mappings = conf.mapping.split(',').map(function (cnf) {
@@ -93,12 +102,12 @@ Sends all public properties from current component with the event.
               qps[target] = flowEvent.data[source];
 
             });
-            this.set('queryParamerters', qps);
+            this.set('data', qps);
 
 
           }
-        }else{
-          console.warn('no config for '+ this.current + ' ' +flowEvent.event);
+        } else {
+          console.warn('no config for ' + this.current + ' ' + flowEvent.event);
         }
       }
     });
