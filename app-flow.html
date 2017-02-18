@@ -1,0 +1,100 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="app-flow-router.html">
+
+<!--
+`app-flow`
+
+is a helper component for firing  app-flow events with an app-flow object.
+Sends all public properties from current component with the event.
+
+@demo demo/index.html 
+-->
+
+<dom-module id="app-flow">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+
+  </template>
+
+  <script>
+    // to ensure that data is of type AppFlow
+    function AppFlow(name) {
+
+      this.event = name;
+      this.data = {};
+      this.append = function (key, value) {
+        this.data[key] = value;
+      }
+    }
+
+
+    Polymer({
+
+      is: 'app-flow',
+
+      properties: {
+
+        /**
+         * Name of your app-flow event object
+         *
+         * i.e. 'task-clicked', 'wizard-step1-completed',...
+         */
+        eventName: {
+          type: String
+        },
+
+        /**
+         * If you want to send a selection properties or send private properties with the app-flow event.
+         * Enter a comma separated list of your properties.
+         *
+         * 'firstName, _enabled, lastName'
+         */
+        sendProperties: {
+          type: String
+        }
+      },
+      /**
+       * App-flow event with app-flow object will be fired when you trigger the `emit` function.
+       *
+       * @event app-flow(object)
+       */
+
+      /**
+       * fire the app-flow event
+       */
+      emit: function () {
+
+        var data = new AppFlow(this.eventName);
+
+        if (this.sendProperties) {
+          // send selected properties
+          var props = this.sendProperties.split(',');
+          props = props.map(function (p) {
+            return p.trim();
+          });
+          for (prop in props) {
+            data.append(props[prop], this.dataHost[props[prop]]);
+          }
+        } else {
+          // send all configured properties
+          for (var prop in this.dataHost._config) {
+            this.dataHost._config.hasOwnProperty(prop)
+            {
+              // exclude private props
+              if (prop[0] !== '_') {
+                data.append(prop, this.dataHost[prop]);
+              }
+            }
+          }
+        }
+        this.fire('app-flow', data);
+
+      }
+
+    });
+  </script>
+</dom-module>

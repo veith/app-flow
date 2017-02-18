@@ -1,0 +1,23 @@
+{
+    "suites": ["test/*_test.html"],
+    "verbose": true,
+    "plugins": {
+        "istanbul": {
+            "dir": "./coverage",
+            "reporters": ["text-summary", "lcov"],
+            "include": [
+                "/app-flow.html",
+                "/app-flow-router.html"
+            ],
+            "exclude": [],
+            "thresholds": {
+                "global": {
+                    "statements": 82
+                }
+            }
+        },
+        "local": {
+            "browsers": ["chrome", "firefox"]
+        }
+    }
+}

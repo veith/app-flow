@@ -1,0 +1,106 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`app-flow`
+
+is a helper component for firing  app-flow events with an app-flow object.
+Sends all public properties from current component with the event.
+
+@demo demo/index.html 
+-->
+
+<dom-module id="app-flow-router">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+
+  </template>
+
+  <script>
+
+    Polymer({
+
+      is: 'app-flow-router',
+
+      properties: {
+
+        /**
+         *Configuration Array
+         *
+         * | current   | flow-event-name | target      | mapping            |
+         * |:----------|:----------------|:------------|:-------------------|
+         * | view-main | form-completed  | detail-view | element => aufgabe |
+         *
+         *
+         */
+
+        config: {
+          type: Array,
+          observer: '_initConf'
+        },
+
+        /**
+         * Name of the current selection
+         */
+        current: {
+          type: String,
+          notify: true
+        },
+
+        queryParamerters: {
+          type: Object,
+          notify: true
+        }
+
+      },
+      _initConf: function (configArray) {
+        this._configObject = {};
+        var self = this;
+        // build config object for faster checks
+        configArray.forEach(function (config) {
+          self._configObject[config[0] + config[1]] = {target: config[2], mapping: config[3]};
+        });
+      },
+      /**
+       * Process a flow event
+       * @param flowEvent
+       */
+      check: function (flowEvent) {
+        var current = this.current;
+        var self = this;
+
+        var conf = this._configObject[this.current + flowEvent.event];
+        if (conf) {
+
+
+          this.set('current', conf.target);
+          if (conf.mapping == undefined || conf.mapping == '') {
+            this.set('queryParamerters', flowEvent.data);
+          } else {
+            // map event data to mappings
+            var mappings = conf.mapping.split(',').map(function (cnf) {
+              return cnf.split('=>').map(function (c) {
+                return c.trim();
+              })
+            });
+            var qps = {};
+            mappings.forEach(function (mapping) {
+              var source = mapping[0];
+              var target = mapping[1];
+              qps[target] = flowEvent.data[source];
+
+            });
+            this.set('queryParamerters', qps);
+
+
+          }
+        }else{
+          console.warn('no config for '+ this.current + ' ' +flowEvent.event);
+        }
+      }
+    });
+  </script>
+</dom-module>

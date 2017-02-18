@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>app-flow test</title>
+
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="parent-element.html">
+
+</head>
+<body>
+<test-fixture id="basic">
+  <template>
+    <test-parent-element></test-parent-element>
+  </template>
+</test-fixture>
+
+
+<script>
+
+  suite('app-flow', function () {
+
+
+    var someElement, element, button, theFlow;
+
+    suiteSetup(function () {
+      element = fixture('basic');
+      button = element.$$('button');
+      theFlow = element.$$('app-flow');
+    });
+
+    test('instantiating the element works', function () {
+      assert.equal(element.is, 'test-parent-element');
+    });
+
+
+    test('app-flow fires app-flow ', function (done) {
+
+      var handler = function (e) {
+
+        assert.equal(e.type, 'app-flow');
+        element.removeEventListener('app-flow', handler);
+        done();
+      };
+
+      element.addEventListener('app-flow', handler);
+      button.click();
+
+    });
+
+    test('app-flow fires app-flow event with app-flow object', function (done) {
+
+      var handler = function (e) {
+        assert.equal(e.detail.data.a, 'a string');
+        element.removeEventListener('app-flow', handler);
+        done();
+      };
+
+      element.addEventListener('app-flow', handler);
+      button.click();
+
+    });
+
+    test('data is instance of AppFlow', function (done) {
+      var handler = function (e) {
+        assert.equal(e.detail instanceof AppFlow, true);
+        element.removeEventListener('app-flow', handler);
+        done();
+      };
+
+      element.addEventListener('app-flow', handler);
+      button.click();
+
+    });
+
+
+    test('send selected props only', function (done) {
+      var handler = function (e) {
+        assert.equal(e.detail instanceof AppFlow, true);
+        assert.equal(e.detail.data.a, undefined);
+        assert.deepEqual(e.detail.data.barray, [1, 2, 3, 4]);
+        assert.equal(e.detail.some, undefined);
+        assert.equal(e.detail.data._privateProp, 'secret');
+        element.removeEventListener('app-flow', handler);
+        done();
+      };
+
+      theFlow.sendProperties = '_privateProp, barray, some';
+      element.addEventListener('app-flow', handler);
+      button.click();
+
+    });
+
+    test('app-flow fires with eventname', function (done) {
+
+      var handler = function (e) {
+        assert.equal(e.type, 'app-flow');
+        assert.equal(e.detail.event, 'button-tapped');
+        element.removeEventListener('app-flow', handler);
+        done();
+      };
+
+      element.addEventListener('app-flow', handler);
+      button.click();
+
+    });
+
+  });
+</script>
+</body>
+</html>

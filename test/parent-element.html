@@ -1,0 +1,78 @@
+<!--
+@license MIT
+-->
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../flowbased-polymer/behaviour.html">
+<link rel="import" href="../app-flow.html">
+<link rel="import" href="../app-flow-router.html">
+
+<!--
+`<parent-element>` is a component for 
+
+
+
+@author veith 
+@date 17.02.17
+@hero path/to/image
+@demo demo/index.html
+-->
+
+<dom-module id="test-parent-element">
+
+  <template>
+
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+<app-flow-router current="{{current}}" config="[[conf]]" ƒ-check="--app-flow" query-paramerters="{{qp}}"></app-flow-router>
+    <button @-tap="--tapped">X</button>
+
+    <div data-x="22">
+<app-flow event-name="button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
+
+    </div>
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'test-parent-element',
+      behaviors: [Polymer.FlowBasedProgramming],
+      /**
+       * Fired when menu button is pressed.
+       *
+       * @event myevent
+       */
+
+      properties: {
+        a: {
+          type: String,
+          value: 'a string'
+        },
+        barray: {
+          type: Array,
+          value: [1, 2, 3, 4]
+        },
+        _privateProp:{
+          type:String,
+          value:"secret"
+        },
+        conf:{
+          type:Array,
+          value:[
+            ['view-main', 'button-tapped', 'detail-view',  'a => aufgabe, barray => mixx'],
+            ['detail-view', 'no-button-tapped', 'detail-view']]
+        },
+        current:{
+          type:String,
+          value:'view-main'
+        },
+        qp:{
+          type:Object
+        }
+      }
+    });
+  </script>
+</dom-module>
