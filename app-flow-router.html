@@ -7,7 +7,8 @@ Use this component with iron-page to implement application flow
 
     <app-flow-router id="flow" current="{{page}}" config="[[conf]]" data="{{qp}}"></app-flow-router>
     <iron-pages selected="[[page]]" ...
-    script... this.$.flow.check(eventDataFromAppFlow) ...script
+
+     this.$.flow.check(eventDataFromAppFlow) ...script
 
 -->
 
@@ -83,7 +84,7 @@ Use this component with iron-page to implement application flow
 
         var conf = this._configObject[this.current + flowEvent.event];
         if (conf) {
-          this.set('current', conf.target);
+          // compute mappings
           if (conf.mapping !== false) {
             if (conf.mapping == undefined || conf.mapping == '') {
               this.set('data', flowEvent.data);
@@ -104,6 +105,8 @@ Use this component with iron-page to implement application flow
               this.set('data', data);
             }
           }
+          // set new target
+          this.set('current', conf.target);
         } else {
           console.warn('no route config found for source:' + this.current + ' and event:' + flowEvent.event);
         }
