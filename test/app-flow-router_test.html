@@ -65,7 +65,7 @@
       var handler = function (e) {
         assert.equal(element.current, 'detail-view');
         assert.equal(element.qp.aufgabe, 'a string');
-        assert.deepEqual(element.qp.mixx, [1,2,3,4]);
+        assert.deepEqual(element.qp.mixx, [1, 2, 3, 4]);
         element.removeEventListener('app-flow', handler);
         done();
       };
@@ -80,8 +80,8 @@
       element = fixture('basic');
       button = element.$$('button');
       element.set('conf', [
-            ['view-main', 'button-tapped', 'detail-view'],
-            ['view-main', 'other-button-tapped', 'detail-view']]);
+        ['view-main', 'button-tapped', 'detail-view'],
+        ['view-main', 'other-button-tapped', 'detail-view']]);
 
       theFlow = element.$$('app-flow');
 

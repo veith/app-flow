@@ -9,7 +9,6 @@ Use this component with iron-page to implement application flow
     <iron-pages selected="[[page]]" ...
     <script>... this.$.flow.check(eventDataFromAppFlow) ...</script>
 
-@demo demo/index.html 
 -->
 
 <dom-module id="app-flow-router">
@@ -84,33 +83,32 @@ Use this component with iron-page to implement application flow
 
         var conf = this._configObject[this.current + flowEvent.event];
         if (conf) {
-
-
           this.set('current', conf.target);
-          if (conf.mapping == undefined || conf.mapping == '') {
-            this.set('data', flowEvent.data);
-          } else {
-            // map event data to mappings
-            var mappings = conf.mapping.split(',').map(function (cnf) {
-              return cnf.split('=>').map(function (c) {
-                return c.trim();
-              })
-            });
-            var qps = {};
-            mappings.forEach(function (mapping) {
-              var source = mapping[0];
-              var target = mapping[1];
-              qps[target] = flowEvent.data[source];
+          if (conf.mapping !== false) {
+            if (conf.mapping == undefined || conf.mapping == '') {
+              this.set('data', flowEvent.data);
+            } else {
+              // map event data to mappings
+              var mappings = conf.mapping.split(',').map(function (cnf) {
+                return cnf.split('=>').map(function (c) {
+                  return c.trim();
+                })
+              });
+              var data = {};
+              mappings.forEach(function (mapping) {
+                var source = mapping[0];
+                var target = mapping[1];
+                data[target] = flowEvent.data[source];
 
-            });
-            this.set('data', qps);
-
-
+              });
+              this.set('data', data);
+            }
           }
         } else {
-          console.warn('no config for ' + this.current + ' ' + flowEvent.event);
+          console.warn('no route config found for source:' + this.current + ' and event:' + flowEvent.event);
         }
       }
-    });
+    })
+    ;
   </script>
 </dom-module>

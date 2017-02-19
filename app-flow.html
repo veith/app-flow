@@ -7,7 +7,6 @@
 is a helper component for firing  app-flow events with an app-flow object.
 Sends all public properties from current component with the event.
 
-@demo demo/index.html 
 -->
 
 <dom-module id="app-flow">
@@ -81,8 +80,8 @@ Sends all public properties from current component with the event.
           }
         } else {
           // send all configured properties
-          for (var prop in this.dataHost._config) {
-            this.dataHost._config.hasOwnProperty(prop)
+          for (var prop in this.dataHost._propertyInfo) {
+            this.dataHost._propertyInfo.hasOwnProperty(prop)
             {
               // exclude private props
               if (prop[0] !== '_') {
