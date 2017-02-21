@@ -81,35 +81,39 @@ Use this component with iron-page to implement application flow
       check: function (flowEvent) {
         var current = this.current;
         var self = this;
-
-        var conf = this._configObject[this.current + flowEvent.event];
-        if (conf) {
-          // compute mappings
-          if (conf.mapping !== false) {
-            if (conf.mapping == undefined || conf.mapping == '') {
-              this.set('data', flowEvent.data);
-            } else {
-              // map event data to mappings
-              var mappings = conf.mapping.split(',').map(function (cnf) {
-                return cnf.split('=>').map(function (c) {
-                  return c.trim();
-                })
-              });
-              var data = {};
-              mappings.forEach(function (mapping) {
-                var source = mapping[0];
-                var target = mapping[1];
-                data[target] = flowEvent.data[source];
-
-              });
-              this.set('data', data);
-            }
-          }
-          // set new target
-          this.set('current', conf.target);
+        if (!this._configObject) {
+          throw new TypeError('Attribute config for app-flow-router used in "'+ this.dataHost.is +'" is not set ');
         } else {
-          console.warn('no route config found for source:' + this.current + ' and event:' + flowEvent.event);
+          var conf = this._configObject[this.current + flowEvent.event];
+          if (conf) {
+            // compute mappings
+            if (conf.mapping !== false) {
+              if (conf.mapping == undefined || conf.mapping == '') {
+                this.set('data', flowEvent.data);
+              } else {
+                // map event data to mappings
+                var mappings = conf.mapping.split(',').map(function (cnf) {
+                  return cnf.split('=>').map(function (c) {
+                    return c.trim();
+                  })
+                });
+                var data = {};
+                mappings.forEach(function (mapping) {
+                  var source = mapping[0];
+                  var target = mapping[1];
+                  data[target] = flowEvent.data[source];
+
+                });
+                this.set('data', data);
+              }
+            }
+            // set new target
+            this.set('current', conf.target);
+          } else {
+            console.warn('no route config found for source:' + this.current + ' and event:' + flowEvent.event);
+          }
         }
+
       }
     })
     ;
