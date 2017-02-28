@@ -1,0 +1,97 @@
+<!--
+@license MIT
+-->
+<link rel="import" href="../polymer/polymer.html">
+
+
+<!--
+`<log-flow>`
+is a component for logging app-flow and normal events
+
+
+
+@author veith
+@date 27.02.17
+@hero path/to/image
+@demo demo/index.html
+-->
+
+<dom-module id="log-flow">
+
+  <template>
+
+    <style>
+      :host {
+        display: block;
+      }
+
+      .log {
+        padding: 6px;
+        color: whitesmoke;
+        font-family: monospace;
+        background-color: #444444;
+        height: 28vh;
+        overflow: scroll;
+      }
+      pre{
+        font-size: 11px;
+      }
+      .time{
+        font-size: 11px;
+        border-bottom: 1px solid;
+        margin-bottom: 8px;
+      }
+    </style>
+
+    <strong>AppFlow events ([[log.length]])</strong>
+    <div class="log">
+
+      <template is="dom-repeat" items="[[log]]">
+        [[item.event]]
+        <pre>[[_stringify(item.data)]]</pre>
+        <div class="time">[[item.time]]</div>
+      </template>
+
+    </div>
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'log-flow',
+      behaviors: [Polymer.FlowBasedProgramming],
+
+      properties: {
+        /**
+         * the logged events
+         */
+        log: {
+          type: Array,
+          value: []
+        }
+      },
+      event:function (e) {
+        var d = new Date();
+        e.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        e.data = e.detail;
+
+        if(e.bubbles){
+          e.event = '^^' + e.type;
+        }else{
+          e.event = '^' + e.type;
+        }
+
+
+        this.unshift('log', e);
+      },
+      flow: function (e) {
+        var d = new Date();
+        e.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+        this.unshift('log', e);
+      },
+      _stringify: function (o) {
+        return JSON.stringify(o, null, 2)
+      }
+    });
+  </script>
+</dom-module>
