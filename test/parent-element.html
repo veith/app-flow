@@ -26,11 +26,13 @@
         display: block;
       }
     </style>
+
 <app-flow-router current="{{current}}" config="[[conf]]" ƒ-check="--app-flow" data="{{qp}}"></app-flow-router>
     <button @-tap="--tapped">X</button>
 
     <div data-x="22">
 <app-flow event-name="button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
+<app-flow event-name="other-button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
 
     </div>
   </template>
@@ -63,7 +65,8 @@
           type:Array,
           value:[
             ['view-main', 'button-tapped', 'detail-view',  'a => aufgabe, barray => mixx'],
-            ['detail-view', 'no-button-tapped', 'detail-view']]
+            ['detail-view', 'no-button-tapped', 'detail-view'],
+            ['detail-view', 'other-button-tapped', 'detail-view',false]]
         },
         current:{
           type:String,

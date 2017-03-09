@@ -52,7 +52,7 @@ Sends all public properties from current component with the event.
          *
          * 'firstName, _enabled, lastName'
          */
-        sendProperties: {
+        propertiesToSend: {
           type: String
         }
       },
@@ -69,9 +69,9 @@ Sends all public properties from current component with the event.
 
         var data = new AppFlow(this.eventName);
 
-        if (this.sendProperties) {
+        if (this.propertiesToSend) {
           // send selected properties
-          var props = this.sendProperties.split(',');
+          var props = this.propertiesToSend.split(',');
           props = props.map(function (p) {
             return p.trim();
           });
@@ -79,9 +79,10 @@ Sends all public properties from current component with the event.
             data.append(props[prop], this.dataHost[props[prop]]);
           }
         } else {
+
           // send all configured properties
-          for (var prop in this.dataHost._propertyInfo) {
-            this.dataHost._propertyInfo.hasOwnProperty(prop)
+          for (var prop in this.dataHost.properties) {
+            this.dataHost.properties.hasOwnProperty(prop)
             {
               // exclude private props
               if (prop[0] !== '_') {
