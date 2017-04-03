@@ -28,7 +28,7 @@
     </style>
 
 <app-flow-router current="{{current}}" config="[[conf]]" ƒ-check="--app-flow" data="{{qp}}"></app-flow-router>
-    <button @-tap="--tapped">X</button>
+    <button @-tap="--tapped(wiredData)">X</button>
 
     <div data-x="22">
 <app-flow event-name="button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
@@ -49,6 +49,10 @@
        */
 
       properties: {
+        wiredData: {
+          type: String,
+          value: 'some data to pass'
+        },
         a: {
           type: String,
           value: 'a string'

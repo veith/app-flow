@@ -64,10 +64,13 @@ Sends all public properties from current component with the event.
 
       /**
        * fire the app-flow event
+       * @param wiredData: data that is passed to the function is stored in the data object as __wiredData
        */
-      emit: function () {
+      emit: function ( wiredData ) {
 
         var data = new AppFlow(this.eventName);
+
+        data.data.__wiredData = wiredData;
 
         if (this.propertiesToSend) {
           // send selected properties
