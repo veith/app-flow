@@ -110,6 +110,19 @@
 
     });
 
+    test('check if __wiredData is set properly', function (done) {
+
+      var handler = function (e) {
+        assert.equal(e.detail.data.__wiredData, 'some data to pass');
+        element.removeEventListener('app-flow', handler);
+        done();
+      };
+
+      element.addEventListener('app-flow', handler);
+      button.click();
+
+    });
+
   });
 </script>
 </body>
