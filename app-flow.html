@@ -54,6 +54,13 @@ Sends all public properties from current component with the event.
          */
         propertiesToSend: {
           type: String
+        },
+        /**
+         * Set a custom property name for the data passed as an argument. Default is __wiredData
+         */
+        argName: {
+            type:String,
+            value:'__wiredData'
         }
       },
       /**
@@ -70,7 +77,7 @@ Sends all public properties from current component with the event.
 
         var data = new AppFlow(this.eventName);
 
-        data.data.__wiredData = wiredData;
+        data.data[this.argName] = wiredData;
 
         if (this.propertiesToSend) {
           // send selected properties
