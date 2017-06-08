@@ -31,6 +31,7 @@
     suiteSetup(function () {
       element = fixture('basic');
       button = element.$$('button');
+      wiredButton = element.$.wiredButton;
       theFlow = element.$$('app-flow');
     });
 
@@ -111,15 +112,27 @@
     });
 
     test('check if __wiredData is set properly', function (done) {
-
       var handler = function (e) {
         assert.equal(e.detail.data.__wiredData, 'some data to pass');
         element.removeEventListener('app-flow', handler);
         done();
       };
-
       element.addEventListener('app-flow', handler);
-      button.click();
+      wiredButton.click();
+
+    });
+
+
+    test('check if argument name for __wiredData is set properly', function (done) {
+      var handler = function (e) {
+        assert.equal(e.detail.data.argument, 'some data to pass');
+        element.removeEventListener('app-flow', handler);
+        done();
+      };
+
+      element.$.wiredDataFlow.set('argName','argument');
+      element.addEventListener('app-flow', handler);
+      wiredButton.click();
 
     });
 

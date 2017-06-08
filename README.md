@@ -1,6 +1,6 @@
 # \<app-flow\>
 
-Controll application your flow
+Controll your application flow
 
 ## Install the Polymer-CLI
 

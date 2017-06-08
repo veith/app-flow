@@ -27,14 +27,17 @@
       }
     </style>
 
-<app-flow-router current="{{current}}" config="[[conf]]" ƒ-check="--app-flow" data="{{qp}}"></app-flow-router>
-    <button @-tap="--tapped(wiredData)">X</button>
+    <app-flow-router current="{{current}}" config="[[conf]]" ƒ-check="--app-flow" data="{{qp}}"></app-flow-router>
+    <button @-tap="--tapped">X</button>
 
     <div data-x="22">
-<app-flow event-name="button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
-<app-flow event-name="other-button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
+      <app-flow event-name="button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
+      <app-flow event-name="other-button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
 
     </div>
+
+    <button id="wiredButton" @-tap="--wiredData(wiredData)">X</button>
+    <app-flow id="wiredDataFlow" event-name="wired-button-tapped" ƒ-emit="--wiredData" @-app-flow="--app-flow"></app-flow>
   </template>
 
   <script>
@@ -61,23 +64,23 @@
           type: Array,
           value: [1, 2, 3, 4]
         },
-        _privateProp:{
-          type:String,
-          value:"secret"
+        _privateProp: {
+          type: String,
+          value: "secret"
         },
-        conf:{
-          type:Array,
-          value:[
-            ['view-main', 'button-tapped', 'detail-view',  'a => aufgabe, barray => mixx'],
+        conf: {
+          type: Array,
+          value: [
+            ['view-main', 'button-tapped', 'detail-view', 'a => aufgabe, barray => mixx'],
             ['detail-view', 'no-button-tapped', 'detail-view'],
-            ['detail-view', 'other-button-tapped', 'detail-view',false]]
+            ['detail-view', 'other-button-tapped', 'detail-view', false]]
         },
-        current:{
-          type:String,
-          value:'view-main'
+        current: {
+          type: String,
+          value: 'view-main'
         },
-        qp:{
-          type:Object
+        qp: {
+          type: Object
         }
       }
     });
