@@ -3,7 +3,7 @@
   "description": "Controll application your flow",
   "main": "app-flow.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.4.0"
+    "polymer": "Polymer/polymer#^1.4.0||>2.0.0"
   },
   "scripts": {
     "lint": "polymer lint --input *.html",
