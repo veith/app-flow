@@ -86,17 +86,17 @@ Sends all public properties from current component with the event.
             return p.trim();
           });
           for (prop in props) {
-            data.append(props[prop], this.dataHost[props[prop]]);
+            data.append(props[prop], this.domHost[props[prop]]);
           }
         } else {
 
           // send all configured properties
-          for (var prop in this.dataHost.properties) {
-            this.dataHost.properties.hasOwnProperty(prop)
+          for (var prop in this.domHost.properties) {
+            this.domHost.properties.hasOwnProperty(prop)
             {
               // exclude private props
               if (prop[0] !== '_') {
-                data.append(prop, this.dataHost[prop]);
+                data.append(prop, this.domHost[prop]);
               }
             }
           }
