@@ -1,105 +1,133 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>app-flow test</title>
+    <title>app-flow test</title>
 
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
 
-  <link rel="import" href="parent-element.html">
+    <link rel="import" href="parent-element.html">
 
 </head>
 <body>
 <test-fixture id="basic">
-  <template>
-    <test-parent-element></test-parent-element>
-  </template>
+    <template>
+        <test-parent-element></test-parent-element>
+    </template>
 </test-fixture>
 
 
 <script>
 
-  suite('app-flow-router', function () {
+    suite('app-flow-router', function () {
 
 
-    var someElement, element, button, theFlow;
+        var someElement, element, button, theFlow;
 
 
-    test('instantiating the element works', function () {
+        test('instantiating the element works', function () {
 
-      element = fixture('basic');
-      button = element.$$('button');
-      theFlow = element.$$('app-flow');
-      assert.equal(element.is, 'test-parent-element');
+            element = fixture('basic');
+            button = element.$$('button');
+            theFlow = element.$$('app-flow');
+            assert.equal(element.is, 'test-parent-element');
+        });
+
+
+        test('current switches to detail-view', function (done) {
+
+            element = fixture('basic');
+            button = element.$$('button');
+            theFlow = element.$$('app-flow');
+            assert.equal(element.current, 'view-main');
+            var handler = function (e) {
+                assert.equal(element.current, 'detail-view');
+                element.removeEventListener('app-flow', handler);
+                done();
+            };
+
+            element.addEventListener('app-flow', handler);
+            button.click();
+
+        });
+
+        test('set data with mapping', function (done) {
+
+            element = fixture('basic');
+            button = element.$$('button');
+            theFlow = element.$$('app-flow');
+
+            assert.equal(element.current, 'view-main');
+            var handler = function (e) {
+                assert.equal(element.current, 'detail-view');
+                assert.equal(element.qp.aufgabe, 'a string');
+                assert.deepEqual(element.qp.mixx, [1, 2, 3, 4]);
+                element.removeEventListener('app-flow', handler);
+                done();
+            };
+
+            element.addEventListener('app-flow', handler);
+            button.click();
+
+        });
+
+        test('set data without mapping', function (done) {
+
+            element = fixture('basic');
+            button = element.$$('button');
+            element.set('conf', [
+                ['view-main', 'button-tapped', 'detail-view'],
+                ['view-main', 'other-button-tapped', 'detail-view']]);
+
+            theFlow = element.$$('app-flow');
+
+            assert.equal(element.current, 'view-main');
+            var handler = function (e) {
+
+                assert.equal(element.current, 'detail-view');
+                assert.equal(element.qp.a, 'a string');
+                element.removeEventListener('app-flow', handler);
+                done();
+            };
+
+            element.addEventListener('app-flow', handler);
+            button.click();
+
+        });
+
+        test('switches back to view-main', function (done) {
+
+            element = fixture('basic');
+            button = element.$$('button');
+            element.set('conf', [
+                ['view-main', 'button-tapped', 'detail-view'],
+                ['detail-view', 'other-button-tapped', 'HISTORY-BACK']]);
+            theFlow = element.$$('app-flow');
+            assert.equal(element.current, 'view-main');
+            var handler = function (e) {
+                assert.equal(element.current, 'detail-view');
+                element.removeEventListener('app-flow', handler);
+
+                var handlerBack = function (e) {
+                    assert.equal(element.current, 'view-main');
+                    element.removeEventListener('app-flow', handlerBack);
+                    done();
+                };
+                element.addEventListener('app-flow', handlerBack);
+                button.click();
+            };
+
+            element.addEventListener('app-flow', handler);
+            button.click();
+
+        });
+
+
     });
-
-
-    test('current switches to detail-view', function (done) {
-
-      element = fixture('basic');
-      button = element.$$('button');
-      theFlow = element.$$('app-flow');
-      assert.equal(element.current, 'view-main');
-      var handler = function (e) {
-        assert.equal(element.current, 'detail-view');
-        element.removeEventListener('app-flow', handler);
-        done();
-      };
-
-      element.addEventListener('app-flow', handler);
-      button.click();
-
-    });
-
-    test('set data with mapping', function (done) {
-
-      element = fixture('basic');
-      button = element.$$('button');
-      theFlow = element.$$('app-flow');
-
-      assert.equal(element.current, 'view-main');
-      var handler = function (e) {
-        assert.equal(element.current, 'detail-view');
-        assert.equal(element.qp.aufgabe, 'a string');
-        assert.deepEqual(element.qp.mixx, [1, 2, 3, 4]);
-        element.removeEventListener('app-flow', handler);
-        done();
-      };
-
-      element.addEventListener('app-flow', handler);
-      button.click();
-
-    });
-
-    test('set data without mapping', function (done) {
-
-      element = fixture('basic');
-      button = element.$$('button');
-      element.set('conf', [
-        ['view-main', 'button-tapped', 'detail-view'],
-        ['view-main', 'other-button-tapped', 'detail-view']]);
-
-      theFlow = element.$$('app-flow');
-
-      assert.equal(element.current, 'view-main');
-      var handler = function (e) {
-
-        assert.equal(element.current, 'detail-view');
-        assert.equal(element.qp.a, 'a string');
-        element.removeEventListener('app-flow', handler);
-        done();
-      };
-
-      element.addEventListener('app-flow', handler);
-      button.click();
-
-    });
-
-  });
 </script>
 </body>
 </html>
