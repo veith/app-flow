@@ -13,109 +13,135 @@ Use this component with iron-page to implement application flow
 -->
 
 <dom-module id="app-flow-router">
-  <template>
-    <style>
-      :host {
-        display: none;
-      }
-    </style>
-
-  </template>
-
-  <script>
-
-    Polymer({
-
-      is: 'app-flow-router',
-
-      properties: {
-
-        /**
-         *Configuration Array
-         *
-         * | current   | flow-event-name | target      | [mapping]          |
-         * |:----------|:----------------|:------------|:-------------------|
-         * | view-main | form-completed  | detail-view | element => aufgabe |
-         *
-         *     [['view-main', 'button-tapped', 'detail-view',  'task => id]]
-         *  if current is set to view-main and the app-flow-event with name 'button-tapped' is triggered, current is set to detail-view and data.task from app-flow is mapped to data.id.
-         */
-
-        config: {
-          type: Array,
-          observer: '_initConf'
-        },
-
-        /**
-         * Name of the current selection
-         */
-        current: {
-          type: String,
-          notify: true
-        },
-        /**
-         * mapped or raw data from app-flow event.
-         *
-         */
-        data: {
-          type: Object,
-          notify: true
-        }
-
-      },
-      /**
-       * build internal config for faster access
-       */
-      _initConf: function (configArray) {
-        this._configObject = {};
-        var self = this;
-        // build config object for faster checks
-        configArray.forEach(function (config) {
-          self._configObject[config[0] + config[1]] = {target: config[2], mapping: config[3]};
-        });
-      },
-      /**
-       * Process a flow event
-       * @param flowEvent
-       */
-      check: function (flowEvent) {
-        var current = this.current;
-        var self = this;
-        if (!this._configObject) {
-          throw new TypeError('Attribute config for app-flow-router used in "'+ this.dataHost.is +'" is not set ');
-        } else {
-          var conf = this._configObject[this.current + flowEvent.event];
-          if (conf) {
-            // compute mappings
-            if (conf.mapping !== false) {
-              if (conf.mapping == undefined || conf.mapping == '') {
-                this.set('data', flowEvent.data);
-              } else {
-                // map event data to mappings
-                var mappings = conf.mapping.split(',').map(function (cnf) {
-                  return cnf.split('=>').map(function (c) {
-                    return c.trim();
-                  })
-                });
-                var data = {};
-                mappings.forEach(function (mapping) {
-                  var source = mapping[0];
-                  var target = mapping[1];
-                  data[target] = flowEvent.data[source];
-
-                });
-                this.set('data', data);
-              }
+    <template>
+        <style>
+            :host {
+                display: none;
             }
-            // set new target
-            this.set('current', conf.target);
-          } else {
-            console.warn('no route config found for source:' + this.current + ' and event:' + flowEvent.event);
-          }
-        }
+        </style>
 
-      }
-    })
-    ;
-  </script>
+    </template>
+
+    <script>
+
+        Polymer({
+
+            is: 'app-flow-router',
+
+            properties: {
+
+                /**
+                 *Configuration Array
+                 *
+                 * | current   | flow-event-name | target      | [mapping]          |
+                 * |:----------|:----------------|:------------|:-------------------|
+                 * | view-main | form-completed  | detail-view | element => aufgabe |
+                 *
+                 *     [['view-main', 'button-tapped', 'detail-view',  'task => id]]
+                 *  if current is set to view-main and the app-flow-event with name 'button-tapped' is triggered, current is set to detail-view and data.task from app-flow is mapped to data.id.
+                 *
+                 *  Special target configurations:
+                 *
+                 *  if target is set to HISTORY-BACK the app-flow-event will allways set the current to the lastCurrent
+                 *
+                 *  [['view-detail', 'button-tapped', 'HISTORY-BACK',  'task => id]] will route you back to view-main
+                 */
+
+                config: {
+                    type: Array,
+                    observer: '_initConf'
+                },
+
+                /**
+                 * Name of the current selection
+                 */
+                current: {
+                    type: String,
+                    notify: true
+                },
+                /**
+                 * mapped or raw data from app-flow event.
+                 *
+                 */
+                data: {
+                    type: Object,
+                    notify: true
+                },
+
+                /**
+                 * List of current selections
+                 * is needed to automate the history-back app-flow
+                 * @private
+                 */
+                _lastCurrents: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                }
+
+            },
+            /**
+             * build internal config for faster access
+             */
+            _initConf: function (configArray) {
+                this._configObject = {};
+                var self = this;
+                // build config object for faster checks
+                configArray.forEach(function (config) {
+                    self._configObject[config[0] + config[1]] = {target: config[2], mapping: config[3]};
+                });
+            },
+            /**
+             * Process a flow event
+             * @param flowEvent
+             */
+            check: function (flowEvent) {
+                var current = this.current;
+                var self = this;
+                if (!this._configObject) {
+                    throw new TypeError('Attribute config for app-flow-router used in "' + this.dataHost.is + '" is not set ');
+                } else {
+                    var conf = this._configObject[this.current + flowEvent.event];
+                    if (conf) {
+                        // compute mappings
+                        if (conf.mapping !== false) {
+                            if (conf.mapping == undefined || conf.mapping == '') {
+                                this.set('data', flowEvent.data);
+                            } else {
+                                // map event data to mappings
+                                var mappings = conf.mapping.split(',').map(function (cnf) {
+                                    return cnf.split('=>').map(function (c) {
+                                        return c.trim();
+                                    })
+                                });
+                                var data = {};
+                                mappings.forEach(function (mapping) {
+                                    var source = mapping[0];
+                                    var target = mapping[1];
+                                    data[target] = flowEvent.data[source];
+
+                                });
+                                this.set('data', data);
+                            }
+                        }
+                        // set new target
+                        if (conf.target === 'HISTORY-BACK') {
+                            if (this._lastCurrents.length >= 1){
+                                this.set('current', this._lastCurrents[this._lastCurrents.length-1]);
+                                this.pop('_lastCurrents');
+                            }
+                        } else {
+                            this.push('_lastCurrents', this.current);
+                            this.set('current', conf.target);
+                        }
+                    } else {
+                        console.warn('no route config found for source:' + this.current + ' and event:' + flowEvent.event);
+                    }
+                }
+
+            }
+        })
+        ;
+    </script>
 </dom-module>
