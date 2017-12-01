@@ -103,10 +103,17 @@ Use this component with iron-page to implement application flow
                     throw new TypeError('Attribute config for app-flow-router used in "' + this.dataHost.is + '" is not set ');
                 } else {
                     var conf = this._configObject[this.current + flowEvent.event];
+
+                    if (!conf && flowEvent.event === 'menuitem-tapped') {
+                        conf = {
+                            target: flowEvent.data.target
+                        };
+                    }
+
                     if (conf) {
                         // compute mappings
                         if (conf.mapping !== false) {
-                            if (conf.mapping == undefined || conf.mapping == '') {
+                            if (conf.mapping === undefined || conf.mapping === '') {
                                 this.set('data', flowEvent.data);
                             } else {
                                 // map event data to mappings
