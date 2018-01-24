@@ -1,34 +1,36 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
-<!--
-`app-flow`
+<script>
+  /**
+   * `app-flow-router`
+   *
+   *
+   * `app-flow`
+   *
+   * Use this component with iron-page to implement application flow
+   *
+   * <app-flow-router id="flow" current="{{page}}" config="[[conf]]" data="{{qp}}"></app-flow-router>
+   * <iron-pages selected="[[page]]" ...
+   *
+   * this.$.flow.check(eventDataFromAppFlow) ...script
+   *
+   *
+   *
+   * @customElement
+   * @polymer
+   * @demo demo/index.html
+   */
+  class AppFlowRouter extends Polymer.Element {
+    constructor() {
+      super();
+    }
 
-Use this component with iron-page to implement application flow
+    static get is() {
+      return 'app-flow-router';
+    }
 
-    <app-flow-router id="flow" current="{{page}}" config="[[conf]]" data="{{qp}}"></app-flow-router>
-    <iron-pages selected="[[page]]" ...
-
-     this.$.flow.check(eventDataFromAppFlow) ...script
-
--->
-
-<dom-module id="app-flow-router">
-  <template>
-    <style>
-      :host {
-        display: none;
-      }
-    </style>
-
-  </template>
-
-  <script>
-
-    Polymer({
-
-      is: 'app-flow-router',
-
-      properties: {
+    static get properties() {
+      return {
 
         /**
          *Configuration Array
@@ -84,73 +86,77 @@ Use this component with iron-page to implement application flow
             return [];
           }
         }
+      };
+    }
 
-      },
-      /**
-       * build internal config for faster access
-       */
-      _initConf: function (configArray) {
+    /**
+     * build internal config for faster access
+     */
+    _initConf(configArray) {
+      if (configArray) {
         this._configObject = {};
-        var self = this;
+        let self = this;
         // build config object for faster checks
         configArray.forEach(function (config) {
           self._configObject[config[0] + config[1]] = {target: config[2], mapping: config[3]};
         });
-      },
-      /**
-       * Process a flow event
-       * @param flowEvent
-       */
-      check: function (flowEvent) {
-        var current = this.current;
-        var self = this;
-        if (!this._configObject) {
-          throw new TypeError('Attribute config for app-flow-router used in "' + this.dataHost.is + '" is not set ');
-        } else {
-          var conf = this._configObject[this.current + flowEvent.event];
-          if (!conf) {
-            //try with wildcard as current
-            conf = this._configObject['*' + flowEvent.event];
-          }
-          if (conf) {
-            // compute mappings
-            if (conf.mapping !== false) {
-              if (conf.mapping == undefined || conf.mapping == '') {
-                this.set('data', flowEvent.data);
-              } else {
-                // map event data to mappings
-                var mappings = conf.mapping.split(',').map(function (cnf) {
-                  return cnf.split('=>').map(function (c) {
-                    return c.trim();
-                  })
-                });
-                var data = {};
-                mappings.forEach(function (mapping) {
-                  var source = mapping[0];
-                  var target = mapping[1];
-                  data[target] = flowEvent.data[source];
+      }
+    };
 
-                });
-                this.set('data', data);
-              }
-            }
-            // set new target
-            if (conf.target === 'HISTORY-BACK') {
-              if (this._lastCurrents.length >= 1) {
-                this.set('current', this._lastCurrents[this._lastCurrents.length - 1]);
-                this.pop('_lastCurrents');
-              }
+    /**
+     * Process a flow event
+     * @param flowEvent
+     */
+    check(flowEvent) {
+      let current = this.current;
+      let self = this;
+      if (!this._configObject) {
+        throw new TypeError('Attribute config for app-flow-router used in "' + this.dataHost.is + '" is not set ');
+      } else {
+        let conf = this._configObject[this.current + flowEvent.event];
+        if (!conf) {
+          //try with wildcard as current
+          conf = this._configObject['*' + flowEvent.event];
+        }
+        if (conf) {
+          // compute mappings
+          if (conf.mapping !== false) {
+            if (conf.mapping == undefined || conf.mapping == '') {
+              this.set('data', flowEvent.data);
             } else {
-              this.push('_lastCurrents', this.current);
-              this.set('current', conf.target);
+              // map event data to mappings
+              let mappings = conf.mapping.split(',').map(function (cnf) {
+                return cnf.split('=>').map(function (c) {
+                  return c.trim();
+                })
+              });
+              let data = {};
+              mappings.forEach(function (mapping) {
+                let source = mapping[0];
+                let target = mapping[1];
+                data[target] = flowEvent.data[source];
+
+              });
+              this.set('data', data);
+            }
+          }
+          // set new target
+          if (conf.target === 'HISTORY-BACK') {
+            if (this._lastCurrents.length >= 1) {
+              this.set('current', this._lastCurrents[this._lastCurrents.length - 1]);
+              this.pop('_lastCurrents');
             }
           } else {
-            console.warn('no route config found for source: * | ' + this.current + ' and event:' + flowEvent.event);
+            this.push('_lastCurrents', this.current);
+            this.set('current', conf.target);
           }
+        } else {
+          console.warn('no route config found for source: * | ' + this.current + ' and event:' + flowEvent.event);
         }
-
       }
-    })
-    ;
-  </script>
-</dom-module>
+    };
+  }
+
+  window.customElements.define(AppFlowRouter.is, AppFlowRouter);
+
+</script>

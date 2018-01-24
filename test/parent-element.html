@@ -1,34 +1,27 @@
 <!--
 @license MIT
 -->
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../flowbased-polymer/behaviour.html">
+
+<link rel="import" href="../../polymer/polymer-element.html">
+<link rel="import" href="../../flowbased-polymer/mixin.html">
+
 <link rel="import" href="../app-flow.html">
 <link rel="import" href="../app-flow-router.html">
 
-<!--
-`<parent-element>` is a component for 
-
-
-
-@author veith 
-@date 17.02.17
-@hero path/to/image
-@demo demo/index.html
--->
-
 <dom-module id="test-parent-element">
-
   <template>
 
     <style>
       :host {
         display: block;
+        background-color: greenyellow;
+        height: 100px;
+        width: 100px;
       }
     </style>
 
     <app-flow-router current="{{current}}" config="[[conf]]" ƒ-check="--app-flow" data="{{qp}}"></app-flow-router>
-    <button @-tap="--tapped">X</button>
+    <button @-click="--tapped">X</button>
 
     <div data-x="22">
       <app-flow event-name="button-tapped" ƒ-emit="--tapped" @-app-flow="--app-flow"></app-flow>
@@ -36,22 +29,36 @@
 
     </div>
 
-    <button id="wiredButton" @-tap="--wiredData(wiredData)">X</button>
-    <app-flow id="wiredDataFlow" event-name="wired-button-tapped" ƒ-emit="--wiredData" @-app-flow="--app-flow"></app-flow>
+    <button id="wiredButton" @-click="--wiredData(wiredData)">X</button>
+    <app-flow id="wiredDataFlow" event-name="wired-button-tapped" ƒ-emit="--wiredData"
+              @-app-flow="--app-flow"></app-flow>
   </template>
+</dom-module>
 
-  <script>
 
-    Polymer({
-      is: 'test-parent-element',
-      behaviors: [Polymer.FlowBasedProgramming],
-      /**
-       * Fired when menu button is pressed.
-       *
-       * @event myevent
-       */
+<script>
+  /**
+   * `parent-element`
+   *
+   *
+   * @customElement
+   * @polymer
+   * @demo demo/index.html
+   * @mixes FBPMixin
+   */
+  class TestParentElement extends FBPMixin(Polymer.Element) {
 
-      properties: {
+    constructor() {
+      super();
+    }
+
+
+    static get is() {
+      return 'test-parent-element';
+    }
+
+    static get properties() {
+      return  {
         wiredData: {
           type: String,
           value: 'some data to pass'
@@ -82,7 +89,10 @@
         qp: {
           type: Object
         }
-      }
-    });
-  </script>
-</dom-module>
+      };
+    }
+  }
+
+  window.customElements.define(TestParentElement.is, TestParentElement);
+
+</script>

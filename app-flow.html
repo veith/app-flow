@@ -1,41 +1,38 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="app-flow-router.html">
 
-<!--
-`app-flow`
+<script>
+  /**
+   * `app-flow`
+   *
+   * is a helper component for firing  app-flow events with an app-flow object.
+   * Sends all public properties from current component with the event.
+   *
+   * @customElement
+   * @polymer
+   * @demo demo/index.html
+   */
 
-is a helper component for firing  app-flow events with an app-flow object.
-Sends all public properties from current component with the event.
+  // to ensure that data is of type AppFlow
+  function TypeAppFlow(name) {
+    this.event = name;
+    this.data = {};
+    this.append = function (key, value) {
+      this.data[key] = value;
+    }
+  }
 
--->
-
-<dom-module id="app-flow">
-  <template>
-    <style>
-      :host {
-        display: none;
-      }
-    </style>
-
-  </template>
-
-  <script>
-    // to ensure that data is of type AppFlow
-    function AppFlow(name) {
-
-      this.event = name;
-      this.data = {};
-      this.append = function (key, value) {
-        this.data[key] = value;
-      }
+  class AppFlow extends Polymer.Element {
+    constructor() {
+      super();
     }
 
+    static get is() {
+      return 'app-flow';
+    }
 
-    Polymer({
-
-      is: 'app-flow',
-
-      properties: {
+    static get properties() {
+      return {
 
         /**
          * Name of your app-flow event object
@@ -59,52 +56,62 @@ Sends all public properties from current component with the event.
          * Set a custom property name for the data passed as an argument. Default is __wiredData
          */
         argName: {
-            type:String,
-            value:'__wiredData'
+          type: String,
+          value: '__wiredData'
         }
-      },
-      /**
-       * App-flow event with app-flow object will be fired when you trigger the `emit` function.
-       *
-       * @event app-flow(object)
-       */
+      };
+    }
 
-      /**
-       * fire the app-flow event
-       * @param wiredData: data that is passed to the function is stored in the data object as __wiredData
-       */
-      emit: function ( wiredData ) {
 
-        var data = new AppFlow(this.eventName);
+    /**
+     * fire the app-flow event
+     * @param wiredData: data that is passed to the function is stored in the data object as __wiredData
+     */
+    emit(wiredData) {
 
-        data.data[this.argName] = wiredData;
+      var data = new TypeAppFlow(this.eventName);
+      var host = Polymer.dom(this).getOwnerRoot().host;
 
-        if (this.propertiesToSend) {
-          // send selected properties
-          var props = this.propertiesToSend.split(',');
-          props = props.map(function (p) {
-            return p.trim();
-          });
-          for (prop in props) {
-            data.append(props[prop], this.domHost[props[prop]]);
-          }
-        } else {
+      data.data[this.argName] = wiredData;
 
-          // send all configured properties
-          for (var prop in this.domHost.properties) {
-            this.domHost.properties.hasOwnProperty(prop)
-            {
-              // exclude private props
-              if (prop[0] !== '_') {
-                data.append(prop, this.domHost[prop]);
-              }
+
+      if (this.propertiesToSend) {
+        // send selected properties
+        var props = this.propertiesToSend.split(',');
+        props = props.map(function (p) {
+          return p.trim();
+        });
+        for (prop in props) {
+          data.append(props[prop], host[props[prop]]);
+        }
+      } else {
+
+        // send all configured properties
+
+        for (var prop in host.constructor.properties) {
+          host.hasOwnProperty(prop)
+          {
+            // exclude private props
+            if (prop[0] !== '_') {
+              data.append(prop, host[prop]);
             }
           }
         }
-        this.fire('app-flow', data);
-
       }
 
-    });
-  </script>
-</dom-module>
+      /**
+       * @event app-flow
+       *
+       * App-flow event with app-flow object will be fired when you trigger the `emit` function.
+       * detail payload: data
+       */
+      let customEvent = new Event('app-flow', {composed: true, bubbles: true});
+      customEvent.detail = data;
+      this.dispatchEvent(customEvent);
+    }
+  }
+
+  window.customElements.define(AppFlow.is, AppFlow);
+
+</script>
+
