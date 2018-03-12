@@ -119,6 +119,18 @@
           conf = this._configObject['*' + flowEvent.event];
         }
         if (conf) {
+
+          // set new target
+          if (conf.target === 'HISTORY-BACK') {
+            if (this._lastCurrents.length >= 1) {
+              this.set('current', this._lastCurrents[this._lastCurrents.length - 1]);
+              this.pop('_lastCurrents');
+            }
+          } else {
+            this.push('_lastCurrents', this.current);
+            this.set('current', conf.target);
+          }
+
           // compute mappings
           if (conf.mapping !== false) {
             if (conf.mapping == undefined || conf.mapping == '') {
@@ -139,16 +151,6 @@
               });
               this.set('data', data);
             }
-          }
-          // set new target
-          if (conf.target === 'HISTORY-BACK') {
-            if (this._lastCurrents.length >= 1) {
-              this.set('current', this._lastCurrents[this._lastCurrents.length - 1]);
-              this.pop('_lastCurrents');
-            }
-          } else {
-            this.push('_lastCurrents', this.current);
-            this.set('current', conf.target);
           }
         } else {
           console.warn('no route config found for source: * | ' + this.current + ' and event:' + flowEvent.event);
