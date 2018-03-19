@@ -47,7 +47,7 @@
          * If you want to send a selection properties or send private properties with the app-flow event.
          * Enter a comma separated list of your properties.
          *
-         * 'firstName, _enabled, lastName'
+         * 'firstName, _enabled, lastName, context.subprop'
          */
         propertiesToSend: {
           type: String
@@ -82,7 +82,7 @@
           return p.trim();
         });
         for (prop in props) {
-          data.append(props[prop], host[props[prop]]);
+          data.append(props[prop], Polymer.Path.get(host,props[prop]));
         }
       } else {
 
