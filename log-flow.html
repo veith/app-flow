@@ -2,7 +2,7 @@
 @license MIT
 -->
 
-<link rel="import" href="../polymer/polymer-element.html">
+<script type="module" src="../../@polymer/polymer/polymer-element.js"></script>
 
 
 <dom-module id="log-flow">
@@ -46,63 +46,63 @@
 </dom-module>
 
 
-<script>
-  /**
-   * `log-flow`
-   *
-   * is a component for logging app-flow and regular events
-   *
-   * @customElement
-   * @polymer
-   * @demo demo/index.html
-   */
-  class LogFlow extends Polymer.Element {
-    constructor() {
-      super();
-    }
-
-    static get is() {
-      return 'log-flow';
-    }
-
-    static get properties() {
-      return {
-        /**
-         * the logged events
-         */
-        log: {
-          type: Array,
-          value: []
-        }
-      };
-    }
-
-    event(e) {
-      let d = new Date();
-      e.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-      e.data = e.detail;
-
-      if (e.bubbles) {
-        e.event = '^^' + e.type;
-      } else {
-        e.event = '^' + e.type;
-      }
-
-
-      this.unshift('log', e);
-    };
-
-    flow(e) {
-      let d = new Date();
-      e.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-      this.unshift('log', e);
-    };
-
-    _stringify(o) {
-      return JSON.stringify(o, null, 2)
-    }
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+/**
+ * `log-flow`
+ *
+ * is a component for logging app-flow and regular events
+ *
+ * @customElement
+ * @polymer
+ * @demo demo/index.html
+ */
+class LogFlow extends PolymerElement {
+  constructor() {
+    super();
   }
 
-  window.customElements.define(LogFlow.is, LogFlow);
+  static get is() {
+    return 'log-flow';
+  }
 
+  static get properties() {
+    return {
+      /**
+       * the logged events
+       */
+      log: {
+        type: Array,
+        value: []
+      }
+    };
+  }
+
+  event(e) {
+    let d = new Date();
+    e.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+    e.data = e.detail;
+
+    if (e.bubbles) {
+      e.event = '^^' + e.type;
+    } else {
+      e.event = '^' + e.type;
+    }
+
+
+    this.unshift('log', e);
+  };
+
+  flow(e) {
+    let d = new Date();
+    e.time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+    this.unshift('log', e);
+  };
+
+  _stringify(o) {
+    return JSON.stringify(o, null, 2)
+  }
+}
+
+window.customElements.define(LogFlow.is, LogFlow);
 </script>

@@ -2,19 +2,18 @@
     "suites": ["test/*_test.html"],
     "verbose": true,
     "plugins": {
-        "istanbul": {
+        "istanbub": {
             "dir": "./coverage",
             "reporters": ["text-summary", "lcov"],
             "include": [
-                "/app-flow.html",
-                "/app-flow-router.html"
+                "*.js"
             ],
             "exclude": [],
-            "thresholds": {
-                "global": {
-                    "statements": 82
-                }
+            "thresholds" : {
+            "global": {
+                "statements": 82
             }
+        }
         },
         "local": {
             "browsers": ["chrome"]
