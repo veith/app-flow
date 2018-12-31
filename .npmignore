@@ -1,0 +1,15 @@
+docs
+demo
+node_modules
+coverage
+bower_components
+dist
+.divshot-cache
+.idea
+.DS_Store
+docs/public
+coverage
+test
+.editorconfig
+.gitattributes
+wct.conf.json
