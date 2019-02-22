@@ -31,10 +31,10 @@ class AppFlowRouter extends PolymerElement {
       /**
        *Configuration Array
        *
-       * | current   | flow-event-name      | target      | [mapping]          |
-       * |:----------|:---------------------|:------------|:-------------------|
-       * | view-main | form-complete        | detail-view | element => aufgabe |
-       * | *         | menu-settings-click  | settings    |                    |
+       * | current   | flow-event-name      | target      | [mapping]          | noHistory          |
+       * |:----------|:---------------------|:------------|:-------------------|:-------------------|
+       * | view-main | form-complete        | detail-view | element => aufgabe | flag               |
+       * | *         | menu-settings-click  | settings    |                    |                    |
        *
        *
        *
@@ -48,6 +48,8 @@ class AppFlowRouter extends PolymerElement {
        *  [['view-detail', 'button-tap', 'HISTORY-BACK',  'task => id]] will route you back to view-main
        *
        *  You can set a wildcard for "current". If you check the example: menu-settings-click can be triggered from any current. If there is a "current" with menu-settings-click configured and you are there, the wildcard is not used.
+       *
+       *  Set noHistory if there "current" view should not be listed under _lastCurrents. This is used to exclude pages from the back navigation.
        */
 
       config: {
@@ -94,7 +96,7 @@ class AppFlowRouter extends PolymerElement {
       let self = this;
       // build config object for faster checks
       configArray.forEach(function (config) {
-        self._configObject[config[0] + config[1]] = {target: config[2], mapping: config[3]};
+        self._configObject[config[0] + config[1]] = {target: config[2], mapping: config[3], noHistory: config[4]};
       });
     }
   };
@@ -123,7 +125,9 @@ class AppFlowRouter extends PolymerElement {
             this.pop('_lastCurrents');
           }
         } else {
-          this.push('_lastCurrents', this.current);
+          if(conf.noHistory === undefined || conf.noHistory === '') {
+            this.push('_lastCurrents', this.current);
+          }
           this.set('current', conf.target);
         }
 
